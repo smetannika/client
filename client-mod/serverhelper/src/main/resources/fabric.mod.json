@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "serverhelper",
+  "version": "${version}",
+  "name": "Server Helper",
+  "description": "Бинды на трапку, пласт и зелья. Меню на Insert.",
+  "authors": [],
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "dev.serverhelper.ServerHelperMod"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.11.0",
+    "fabric": "*",
+    "minecraft": "1.16.5"
+  }
+}
