@@ -10,7 +10,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Matrix4f;
 import org.lwjgl.opengl.GL11;
 
-/** Small immediate-mode 2D helpers: anti-aliased-looking rounded rects, shadows, colour math, scissor. */
+/** Small immediate-mode 2D helpers: rounded rects (solid or horizontal gradient), shadows, colour math, scissor. */
 public final class Render2D {
     private static final int SEGMENTS = 10;
 
@@ -30,16 +30,16 @@ public final class Render2D {
         return (a << 24) | (r << 16) | (g << 8) | b;
     }
 
-    /** Rounded rectangle from (x1,y1) to (x2,y2). */
+    /** Rounded rectangle from (x1,y1) to (x2,y2), single colour. */
     public static void rrect(MatrixStack ms, float r, float x1, float y1, float x2, float y2, int color) {
-        float w = x2 - x1, h = y2 - y1;
-        if (w <= 0 || h <= 0 || ((color >>> 24) & 255) == 0) return;
-        r = Math.max(0f, Math.min(r, Math.min(w, h) / 2f));
+        rrectH(ms, r, x1, y1, x2, y2, color, color);
+    }
 
-        float a = ((color >>> 24) & 255) / 255f;
-        float cr = ((color >> 16) & 255) / 255f;
-        float cg = ((color >> 8) & 255) / 255f;
-        float cb = (color & 255) / 255f;
+    /** Rounded rectangle with a left-to-right gradient from c1 to c2. */
+    public static void rrectH(MatrixStack ms, float r, float x1, float y1, float x2, float y2, int c1, int c2) {
+        float w = x2 - x1, h = y2 - y1;
+        if (w <= 0 || h <= 0 || (((c1 >>> 24) & 255) == 0 && ((c2 >>> 24) & 255) == 0)) return;
+        r = Math.max(0f, Math.min(r, Math.min(w, h) / 2f));
 
         Matrix4f m = ms.peek().getModel();
         RenderSystem.enableBlend();
@@ -49,7 +49,7 @@ public final class Render2D {
 
         BufferBuilder b = Tessellator.getInstance().getBuffer();
         b.begin(GL11.GL_TRIANGLE_FAN, VertexFormats.POSITION_COLOR);
-        b.vertex(m, x1 + w / 2f, y1 + h / 2f, 0f).color(cr, cg, cb, a).next();
+        vtx(b, m, x1 + w / 2f, y1 + h / 2f, lerp(c1, c2, 0.5f));
 
         float[][] corners = {
                 {x1 + r, y1 + r, 180f},
@@ -64,10 +64,10 @@ public final class Render2D {
                 float px = corners[c][0] + (float) Math.cos(ang) * r;
                 float py = corners[c][1] + (float) Math.sin(ang) * r;
                 if (c == 0 && i == 0) { firstX = px; firstY = py; }
-                b.vertex(m, px, py, 0f).color(cr, cg, cb, a).next();
+                vtx(b, m, px, py, lerp(c1, c2, (px - x1) / w));
             }
         }
-        b.vertex(m, firstX, firstY, 0f).color(cr, cg, cb, a).next();
+        vtx(b, m, firstX, firstY, lerp(c1, c2, (firstX - x1) / w));
 
         b.end();
         BufferRenderer.draw(b);
@@ -76,15 +76,24 @@ public final class Render2D {
         RenderSystem.disableBlend();
     }
 
-    /** Soft drop shadow made of a few expanding translucent rounded rects. */
+    private static void vtx(BufferBuilder b, Matrix4f m, float x, float y, int col) {
+        b.vertex(m, x, y, 0f).color((col >> 16) & 255, (col >> 8) & 255, col & 255, (col >>> 24) & 255).next();
+    }
+
+    /** Soft black drop shadow. */
     public static void shadow(MatrixStack ms, float r, float x1, float y1, float x2, float y2, float alpha) {
-        for (int i = 6; i >= 1; i--) {
-            float e = i * 1.6f;
-            rrect(ms, r + e, x1 - e, y1 - e + 2, x2 + e, y2 + e + 2, ca(0xFF000000, alpha * 0.045f));
+        shadow(ms, r, x1, y1, x2, y2, 0xFF000000, alpha);
+    }
+
+    /** Soft coloured shadow / glow made of a few expanding translucent rounded rects. */
+    public static void shadow(MatrixStack ms, float r, float x1, float y1, float x2, float y2, int color, float alpha) {
+        for (int i = 7; i >= 1; i--) {
+            float e = i * 1.8f;
+            rrect(ms, r + e, x1 - e, y1 - e + 2, x2 + e, y2 + e + 2, ca(color, alpha * 0.04f));
         }
     }
 
-    /** Clip drawing to a GUI-space rectangle. Call endScissor() afterwards. */
+    /** Clip drawing to a framebuffer-space rectangle given in GUI coordinates. Call endScissor() afterwards. */
     public static void scissor(float x, float y, float w, float h) {
         MinecraftClient mc = MinecraftClient.getInstance();
         double sf = mc.getWindow().getScaleFactor();

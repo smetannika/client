@@ -7,7 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Module {
-    public enum Category { COMBAT, RENDER, HUD }
+    public enum Category {
+        COMBAT("Combat"), RENDER("Render"), HUD("HUD"), SERVER("Server");
+
+        public final String label;
+
+        Category(String label) {
+            this.label = label;
+        }
+    }
 
     protected static final MinecraftClient mc = MinecraftClient.getInstance();
 

@@ -1,5 +1,6 @@
 package dev.client;
 
+import dev.client.module.BindSetting;
 import dev.client.module.BoolSetting;
 import dev.client.module.HudModule;
 import dev.client.module.Module;
@@ -32,6 +33,7 @@ public class Config {
                 String k = m.name + "." + s.name;
                 if (s instanceof BoolSetting) p.setProperty(k, String.valueOf(((BoolSetting) s).value));
                 if (s instanceof NumSetting) p.setProperty(k, String.valueOf(((NumSetting) s).value));
+                if (s instanceof BindSetting) p.setProperty(k, String.valueOf(((BindSetting) s).key));
             }
         }
         try (OutputStream out = Files.newOutputStream(file())) {
@@ -63,6 +65,7 @@ public class Config {
                     if (v == null) continue;
                     if (s instanceof BoolSetting) ((BoolSetting) s).value = Boolean.parseBoolean(v);
                     if (s instanceof NumSetting) ((NumSetting) s).set(Double.parseDouble(v));
+                    if (s instanceof BindSetting) ((BindSetting) s).key = Integer.parseInt(v);
                 }
             } catch (Exception ignored) {
             }

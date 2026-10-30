@@ -2,9 +2,11 @@ package dev.client.module;
 
 import dev.client.gui.ClickGui;
 import dev.client.module.impl.AimAssist;
+import dev.client.module.impl.AutoSwap;
 import dev.client.module.impl.Esp;
 import dev.client.module.impl.FpsHud;
 import dev.client.module.impl.KeybindHud;
+import dev.client.module.impl.ServerHelper;
 import dev.client.module.impl.TargetHud;
 import dev.client.module.impl.TriggerBot;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -28,6 +30,8 @@ public class ModuleManager {
     public static void init() {
         modules.add(new TriggerBot());
         modules.add(new AimAssist());
+        modules.add(new AutoSwap());
+        modules.add(new ServerHelper());
         modules.add(new Esp());
         modules.add(new FpsHud());
         modules.add(new TargetHud());
