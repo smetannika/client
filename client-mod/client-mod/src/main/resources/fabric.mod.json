@@ -3,7 +3,7 @@
   "id": "clientmod",
   "version": "${version}",
   "name": "Client",
-  "description": "ClickGUI (Right Shift), ESP, TriggerBot, AimAssist",
+  "description": "ClickGUI (Right Shift), TriggerBot, AimAssist, ESP, Server Helper, Freecam, HUD (FPS, Target, Keybinds, Potions, Watermark)",
   "authors": ["you"],
   "environment": "client",
   "entrypoints": {

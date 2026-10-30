@@ -1,23 +1,26 @@
 package dev.client.module;
 
+import dev.client.module.Module;
 import net.minecraft.client.util.math.MatrixStack;
 
-/** A module that draws a movable block on the in-game HUD. Drag it with LMB while ClickGUI is open. */
-public abstract class HudModule extends Module {
-    public int x, y;
-    public int w = 80, h = 14;
+public abstract class HudModule
+extends Module {
+    public int x;
+    public int y;
+    public int w = 80;
+    public int h = 14;
 
     protected HudModule(String name, int x, int y, boolean defaultOn) {
-        super(name, Category.HUD);
+        super(name, Module.Category.HUD);
         this.x = x;
         this.y = y;
         this.enabled = defaultOn;
     }
 
-    /** Must update w and h, then draw at (x, y). */
-    public abstract void render(MatrixStack ms);
+    public abstract void render(MatrixStack var1);
 
     public boolean contains(double mx, double my) {
-        return mx >= x && mx < x + w && my >= y && my < y + h;
+        return mx >= (double)this.x && mx < (double)(this.x + this.w) && my >= (double)this.y && my < (double)(this.y + this.h);
     }
 }
+

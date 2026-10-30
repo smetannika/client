@@ -1,13 +1,28 @@
-# Client mod (Fabric 1.16.5, Java 8 target)
+# Client (Fabric 1.16.5)
 
-Requires JDK 17 to run Gradle (output is Java 8 bytecode) and Gradle 7.4.x.
+Клиентский Fabric-мод для Minecraft 1.16.5 (Java 8+). Меню — **Right Shift**.
 
-    gradle wrapper --gradle-version 7.4.2     (once; or just open the folder in IntelliJ IDEA)
-    ./gradlew build                           (Windows: gradlew.bat build)
+## Модули
 
-Jar: build/libs/client-1.16.5-1.0.0.jar -> .minecraft/mods, together with Fabric API 0.42.0+1.16.
+| Вкладка | Модуль | Что делает |
+|---|---|---|
+| Combat | TriggerBot (есть `Only crits` и ползунок `Crit chance %`), AimAssist, AutoSwap | настройки в ClickGUI |
+| Render | ESP | боксы и нейм-теги (имя, здоровье, дистанция), настройки в ClickGUI |
+| Render | **Freecam** | свободная камера, настройка `Speed`; управление WASD / Space / Shift |
+| Server | **Server Helper** | бинды: Трапка (FT), **Дезориентация**, **Снежок**, **Зелье киллера** |
+| HUD | FPS, Target HUD, Keybinds, **Potions**, **Watermark** | перетаскиваются мышью, пока открыт ClickGUI |
 
-Right Shift = ClickGUI. LMB toggle, RMB settings, MMB bind key (Backspace = unbind).
+- Бинд модуля: средняя кнопка мыши по модулю в ClickGUI.
+- Server Helper ищет предмет по названию (хотбар, затем инвентарь), берёт его, использует и возвращает слот.
+- Конфиг: `config/clientmod.properties`.
+- Рендер интерфейса идёт через OpenGL (`gui/Render2D.java`).
 
-## Build online (no Java needed)
-Upload this folder to a GitHub repository (keep the .github folder). Open Actions -> build -> latest run -> Artifacts -> client-jar.
+## Сборка
+
+Нужен JDK 17 (байткод собирается под Java 8).
+
+```
+./gradlew build
+```
+
+Готовый jar: `build/libs/client-1_16_5-1.1.0.jar`. Для запуска нужен Fabric Loader и Fabric API для 1.16.5.

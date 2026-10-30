@@ -1,7 +1,12 @@
 package dev.client.module;
 
-public class NumSetting extends Setting {
-    public final double min, max, step;
+import dev.client.module.Setting;
+
+public class NumSetting
+extends Setting {
+    public final double min;
+    public final double max;
+    public final double step;
     public double value;
 
     public NumSetting(String name, double value, double min, double max, double step) {
@@ -13,11 +18,12 @@ public class NumSetting extends Setting {
     }
 
     public void set(double v) {
-        v = Math.round(v / step) * step;
-        this.value = Math.max(min, Math.min(max, v));
+        v = (double)Math.round(v / this.step) * this.step;
+        this.value = Math.max(this.min, Math.min(this.max, v));
     }
 
     public float f() {
-        return (float) value;
+        return (float)this.value;
     }
 }
+
